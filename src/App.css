@@ -30,6 +30,36 @@
   color: #aaa;
 }
 
+/* Top panel - Save/Load controls */
+.panel-top {
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #e0e0e0;
+  height: auto;
+  max-height: 250px;
+  overflow: hidden;
+}
+
+/* Model info banner in viewer mode */
+.model-info-banner {
+  background: linear-gradient(135deg, #9C27B0 0%, #7B1FA2 100%);
+  color: white;
+  padding: 1rem 2rem;
+  border-bottom: 2px solid #6A1B9A;
+  text-align: center;
+}
+
+.model-info-banner h2 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.model-info-banner p {
+  margin: 0;
+  font-size: 0.9rem;
+  opacity: 0.9;
+}
+
 /* Main content area */
 .app-content {
   display: flex;
@@ -83,4 +113,3 @@
     flex: 1;
   }
 }
-

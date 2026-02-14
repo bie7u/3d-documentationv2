@@ -4,6 +4,8 @@ import { create } from 'zustand';
  * Zustand store for managing the 3D documentation creator state
  * 
  * State structure:
+ * - modelTitle: Title of the model/documentation
+ * - modelDescription: Overall description of the model
  * - steps: Array of step objects, each containing:
  *   - id: unique identifier
  *   - shape: type of 3D shape (cube, sphere, cylinder, cone)
@@ -12,8 +14,13 @@ import { create } from 'zustand';
  *   - color: hex color for the shape
  * - selectedStepId: ID of the currently selected step
  * - nextPosition: Next available position for a new step
+ * - viewerMode: Boolean flag for viewer mode (read-only)
  */
 const useStore = create((set, get) => ({
+  // Model metadata
+  modelTitle: 'Untitled Model',
+  modelDescription: '',
+  
   // Array of steps in the documentation
   steps: [],
   
@@ -22,6 +29,9 @@ const useStore = create((set, get) => ({
   
   // Next position for placing a new step (automatically calculated)
   nextPosition: [0, 0, 0],
+  
+  // Viewer mode flag
+  viewerMode: false,
   
   /**
    * Add a new step to the documentation
@@ -112,6 +122,107 @@ const useStore = create((set, get) => ({
     if (currentIndex > 0) {
       set({ selectedStepId: steps[currentIndex - 1].id });
     }
+  },
+  
+  /**
+   * Update model metadata
+   */
+  updateModelMetadata: (updates) => {
+    set(updates);
+  },
+  
+  /**
+   * Toggle viewer mode
+   */
+  toggleViewerMode: () => {
+    set((state) => ({ viewerMode: !state.viewerMode }));
+  },
+  
+  /**
+   * Set viewer mode
+   */
+  setViewerMode: (mode) => {
+    set({ viewerMode: mode });
+  },
+  
+  /**
+   * Save the current model to localStorage
+   */
+  saveModel: () => {
+    const { modelTitle, modelDescription, steps } = get();
+    
+    const modelData = {
+      title: modelTitle,
+      description: modelDescription,
+      steps: steps,
+      savedAt: new Date().toISOString(),
+    };
+    
+    // Get existing saved models
+    const savedModels = JSON.parse(localStorage.getItem('savedModels') || '[]');
+    
+    // Generate a unique ID for the model (timestamp + random component)
+    const modelId = `${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+    modelData.id = modelId;
+    
+    // Add to saved models
+    savedModels.push(modelData);
+    
+    // Save back to localStorage
+    localStorage.setItem('savedModels', JSON.stringify(savedModels));
+    
+    return modelId;
+  },
+  
+  /**
+   * Load a model from localStorage
+   */
+  loadModel: (modelId) => {
+    const savedModels = JSON.parse(localStorage.getItem('savedModels') || '[]');
+    const model = savedModels.find(m => m.id === modelId);
+    
+    if (model) {
+      set({
+        modelTitle: model.title,
+        modelDescription: model.description,
+        steps: model.steps,
+        selectedStepId: model.steps.length > 0 ? model.steps[0].id : null,
+        nextPosition: model.steps.length > 0 
+          ? [model.steps[model.steps.length - 1].position[0] + 3, 0, 0]
+          : [0, 0, 0],
+        viewerMode: false,
+      });
+    }
+  },
+  
+  /**
+   * Get all saved models
+   */
+  getSavedModels: () => {
+    return JSON.parse(localStorage.getItem('savedModels') || '[]');
+  },
+  
+  /**
+   * Delete a saved model
+   */
+  deleteModel: (modelId) => {
+    const savedModels = JSON.parse(localStorage.getItem('savedModels') || '[]');
+    const filteredModels = savedModels.filter(m => m.id !== modelId);
+    localStorage.setItem('savedModels', JSON.stringify(filteredModels));
+  },
+  
+  /**
+   * Clear the current model and start fresh
+   */
+  clearModel: () => {
+    set({
+      modelTitle: 'Untitled Model',
+      modelDescription: '',
+      steps: [],
+      selectedStepId: null,
+      nextPosition: [0, 0, 0],
+      viewerMode: false,
+    });
   },
 }));
 
