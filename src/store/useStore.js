@@ -161,8 +161,8 @@ const useStore = create((set, get) => ({
     // Get existing saved models
     const savedModels = JSON.parse(localStorage.getItem('savedModels') || '[]');
     
-    // Generate a unique ID for the model
-    const modelId = Date.now().toString();
+    // Generate a unique ID for the model (timestamp + random component)
+    const modelId = `${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
     modelData.id = modelId;
     
     // Add to saved models
