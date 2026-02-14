@@ -1,0 +1,9 @@
+.scene-3d {
+  height: 100%;
+  width: 100%;
+  position: relative;
+}
+
+.scene-3d canvas {
+  display: block;
+}
