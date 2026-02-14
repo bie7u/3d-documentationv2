@@ -1,4 +1,3 @@
-import { useState, useEffect } from 'react';
 import useStore from '../store/useStore';
 import './StepEditor.css';
 
@@ -18,24 +17,9 @@ function StepEditor() {
   // Find the selected step
   const selectedStep = steps.find((step) => step.id === selectedStepId);
 
-  // Local state for form inputs
-  const [description, setDescription] = useState('');
-  const [shape, setShape] = useState('cube');
-  const [color, setColor] = useState('#ffffff');
-
-  // Update local state when a different step is selected
-  useEffect(() => {
-    if (selectedStep) {
-      setDescription(selectedStep.description);
-      setShape(selectedStep.shape);
-      setColor(selectedStep.color);
-    }
-  }, [selectedStep]);
-
-  // Handle form changes
+  // Handle form changes - update directly in the store
   const handleDescriptionChange = (e) => {
     const newDescription = e.target.value;
-    setDescription(newDescription);
     if (selectedStep) {
       updateStep(selectedStep.id, { description: newDescription });
     }
@@ -43,7 +27,6 @@ function StepEditor() {
 
   const handleShapeChange = (e) => {
     const newShape = e.target.value;
-    setShape(newShape);
     if (selectedStep) {
       updateStep(selectedStep.id, { shape: newShape });
     }
@@ -51,7 +34,6 @@ function StepEditor() {
 
   const handleColorChange = (e) => {
     const newColor = e.target.value;
-    setColor(newColor);
     if (selectedStep) {
       updateStep(selectedStep.id, { color: newColor });
     }
@@ -82,7 +64,7 @@ function StepEditor() {
           <label htmlFor="shape">3D Shape</label>
           <select
             id="shape"
-            value={shape}
+            value={selectedStep.shape}
             onChange={handleShapeChange}
             className="form-control"
           >
@@ -98,7 +80,7 @@ function StepEditor() {
           <label htmlFor="description">Description</label>
           <textarea
             id="description"
-            value={description}
+            value={selectedStep.description}
             onChange={handleDescriptionChange}
             className="form-control"
             rows="4"
@@ -113,13 +95,13 @@ function StepEditor() {
             <input
               type="color"
               id="color"
-              value={color}
+              value={selectedStep.color}
               onChange={handleColorChange}
               className="color-input"
             />
             <input
               type="text"
-              value={color}
+              value={selectedStep.color}
               onChange={handleColorChange}
               className="color-text"
               placeholder="#ffffff"
