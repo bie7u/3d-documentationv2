@@ -22,7 +22,7 @@ function StepList() {
         className={`step-item ${step.id === selectedStepId ? 'selected' : ''} ${isSubStep ? 'substep-item' : ''}`}
         onClick={() => selectStep(step.id)}
       >
-        <div className="step-number">{isSubStep ? `${index + 1}` : index + 1}</div>
+        <div className="step-number">{index + 1}</div>
         <div className="step-info">
           <div className="step-shape">{step.shape}</div>
           <div className="step-description">{step.description}</div>

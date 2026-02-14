@@ -95,6 +95,8 @@ const useStore = create((set, get) => ({
   
   /**
    * Add a substep to a specific parent step
+   * Note: Substeps can have their own substeps, allowing for nested hierarchies.
+   * This provides flexibility but should be used judiciously to avoid UI complexity.
    */
   addSubStep: (parentId) => {
     const { steps } = get();
@@ -139,7 +141,7 @@ const useStore = create((set, get) => ({
     
     const newSteps = steps.map(step => {
       if (step.id === parentId) {
-        const newSubSteps = step.subSteps.filter(subStep => subStep.id !== subStepId);
+        const newSubSteps = (step.subSteps || []).filter(subStep => subStep.id !== subStepId);
         return { ...step, subSteps: newSubSteps };
       }
       return step;
@@ -165,7 +167,7 @@ const useStore = create((set, get) => ({
     
     const newSteps = steps.map(step => {
       if (step.id === parentId) {
-        const newSubSteps = step.subSteps.map(subStep =>
+        const newSubSteps = (step.subSteps || []).map(subStep =>
           subStep.id === subStepId ? { ...subStep, ...updates } : subStep
         );
         return { ...step, subSteps: newSubSteps };
