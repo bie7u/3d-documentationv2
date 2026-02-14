@@ -34,7 +34,12 @@ function StepEditor() {
 
   const handleColorChange = (e) => {
     const newColor = e.target.value;
-    if (selectedStep) {
+    // Validate hex color format (# followed by 3 or 6 hex digits)
+    const isValidHex = /^#[0-9A-Fa-f]{6}$/.test(newColor) || /^#[0-9A-Fa-f]{3}$/.test(newColor);
+    
+    // For color picker input, always update (it always gives valid colors)
+    // For text input, only update if it's a valid hex color
+    if (selectedStep && (e.target.type === 'color' || isValidHex)) {
       updateStep(selectedStep.id, { color: newColor });
     }
   };
