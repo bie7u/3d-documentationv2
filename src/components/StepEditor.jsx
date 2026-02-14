@@ -13,6 +13,7 @@ function StepEditor() {
   const steps = useStore((state) => state.steps);
   const selectedStepId = useStore((state) => state.selectedStepId);
   const updateStep = useStore((state) => state.updateStep);
+  const viewerMode = useStore((state) => state.viewerMode);
 
   // Find the selected step
   const selectedStep = steps.find((step) => step.id === selectedStepId);
@@ -20,14 +21,14 @@ function StepEditor() {
   // Handle form changes - update directly in the store
   const handleDescriptionChange = (e) => {
     const newDescription = e.target.value;
-    if (selectedStep) {
+    if (selectedStep && !viewerMode) {
       updateStep(selectedStep.id, { description: newDescription });
     }
   };
 
   const handleShapeChange = (e) => {
     const newShape = e.target.value;
-    if (selectedStep) {
+    if (selectedStep && !viewerMode) {
       updateStep(selectedStep.id, { shape: newShape });
     }
   };
@@ -39,7 +40,7 @@ function StepEditor() {
     
     // For color picker input, always update (it always gives valid colors)
     // For text input, only update if it's a valid hex color
-    if (selectedStep && (e.target.type === 'color' || isValidHex)) {
+    if (selectedStep && !viewerMode && (e.target.type === 'color' || isValidHex)) {
       updateStep(selectedStep.id, { color: newColor });
     }
   };
@@ -48,10 +49,10 @@ function StepEditor() {
     return (
       <div className="step-editor">
         <div className="step-editor-header">
-          <h2>Step Editor</h2>
+          <h2>{viewerMode ? 'Step Details' : 'Step Editor'}</h2>
         </div>
         <div className="no-selection">
-          Select a step to edit its properties
+          Select a step to {viewerMode ? 'view' : 'edit'} its properties
         </div>
       </div>
     );
@@ -60,7 +61,7 @@ function StepEditor() {
   return (
     <div className="step-editor">
       <div className="step-editor-header">
-        <h2>Step Editor</h2>
+        <h2>{viewerMode ? 'Step Details' : 'Step Editor'}</h2>
       </div>
 
       <div className="step-editor-content">
@@ -72,6 +73,7 @@ function StepEditor() {
             value={selectedStep.shape}
             onChange={handleShapeChange}
             className="form-control"
+            disabled={viewerMode}
           >
             <option value="cube">Cube</option>
             <option value="sphere">Sphere</option>
@@ -90,6 +92,7 @@ function StepEditor() {
             className="form-control"
             rows="4"
             placeholder="Enter step description..."
+            disabled={viewerMode}
           />
         </div>
 
@@ -103,6 +106,7 @@ function StepEditor() {
               value={selectedStep.color}
               onChange={handleColorChange}
               className="color-input"
+              disabled={viewerMode}
             />
             <input
               type="text"
@@ -110,6 +114,7 @@ function StepEditor() {
               onChange={handleColorChange}
               className="color-text"
               placeholder="#ffffff"
+              disabled={viewerMode}
             />
           </div>
         </div>

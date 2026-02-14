@@ -11,20 +11,25 @@ function StepList() {
   const selectStep = useStore((state) => state.selectStep);
   const deleteStep = useStore((state) => state.deleteStep);
   const addStep = useStore((state) => state.addStep);
+  const viewerMode = useStore((state) => state.viewerMode);
 
   return (
     <div className="step-list">
       <div className="step-list-header">
         <h2>Steps</h2>
-        <button className="add-step-btn" onClick={addStep} title="Add new step">
-          + Add Step
-        </button>
+        {!viewerMode && (
+          <button className="add-step-btn" onClick={addStep} title="Add new step">
+            + Add Step
+          </button>
+        )}
       </div>
       
       <div className="step-list-items">
         {steps.length === 0 ? (
           <div className="empty-message">
-            No steps yet. Click "Add Step" to create your first step.
+            {viewerMode 
+              ? 'No steps in this model.' 
+              : 'No steps yet. Click "Add Step" to create your first step.'}
           </div>
         ) : (
           steps.map((step, index) => (
@@ -39,16 +44,18 @@ function StepList() {
                 <div className="step-description">{step.description}</div>
               </div>
               <div className="step-color" style={{ backgroundColor: step.color }}></div>
-              <button
-                className="delete-btn"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  deleteStep(step.id);
-                }}
-                title="Delete step"
-              >
-                ×
-              </button>
+              {!viewerMode && (
+                <button
+                  className="delete-btn"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    deleteStep(step.id);
+                  }}
+                  title="Delete step"
+                >
+                  ×
+                </button>
+              )}
             </div>
           ))
         )}
