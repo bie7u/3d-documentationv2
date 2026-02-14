@@ -93,7 +93,7 @@ function StepEditor() {
 
   // Calculate step index for display
   let stepIndex = 0;
-  if (isSubStep) {
+  if (isSubStep && parentStep) {
     stepIndex = parentStep.subSteps.findIndex(s => s.id === selectedStep.id);
   } else {
     stepIndex = steps.findIndex(s => s.id === selectedStep.id);
@@ -186,8 +186,8 @@ function StepEditor() {
               <p><strong>ID:</strong> {selectedStep.id}</p>
               {isSubStep ? (
                 <>
-                  <p><strong>Parent Step:</strong> {steps.findIndex(s => s.id === parentStep.id) + 1}</p>
-                  <p><strong>Substep Index:</strong> {stepIndex + 1} of {parentStep.subSteps.length}</p>
+                  <p><strong>Parent Step:</strong> {parentStep ? steps.findIndex(s => s.id === parentStep.id) + 1 : 'Unknown'}</p>
+                  <p><strong>Substep Index:</strong> {stepIndex + 1} of {parentStep?.subSteps?.length || 0}</p>
                 </>
               ) : (
                 <>

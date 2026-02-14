@@ -95,8 +95,8 @@ const useStore = create((set, get) => ({
   
   /**
    * Add a substep to a specific parent step
-   * Note: Substeps can have their own substeps, allowing for nested hierarchies.
-   * This provides flexibility but should be used judiciously to avoid UI complexity.
+   * Note: While the data structure supports nested substeps (substeps having their own substeps),
+   * the UI currently limits substeps to one level for simplicity. This can be extended in the future if needed.
    */
   addSubStep: (parentId) => {
     const { steps } = get();
