@@ -28,10 +28,12 @@ function App() {
         <p>Create step-by-step 3D documentation with interactive models</p>
       </header>
 
-      {/* Top panel - Save/Load controls */}
-      <div className="panel panel-top">
-        <SaveLoadPanel />
-      </div>
+      {/* Top panel - Save/Load controls (hidden in viewer mode) */}
+      {!viewerMode && (
+        <div className="panel panel-top">
+          <SaveLoadPanel />
+        </div>
+      )}
 
       {/* Model info in viewer mode */}
       {viewerMode && (
