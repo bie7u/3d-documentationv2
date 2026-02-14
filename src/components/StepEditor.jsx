@@ -65,23 +65,6 @@ function StepEditor() {
       </div>
 
       <div className="step-editor-content">
-        {/* Shape Selection */}
-        <div className="form-group">
-          <label htmlFor="shape">3D Shape</label>
-          <select
-            id="shape"
-            value={selectedStep.shape}
-            onChange={handleShapeChange}
-            className="form-control"
-            disabled={viewerMode}
-          >
-            <option value="cube">Cube</option>
-            <option value="sphere">Sphere</option>
-            <option value="cylinder">Cylinder</option>
-            <option value="cone">Cone</option>
-          </select>
-        </div>
-
         {/* Description */}
         <div className="form-group">
           <label htmlFor="description">Description</label>
@@ -96,54 +79,73 @@ function StepEditor() {
           />
         </div>
 
-        {/* Color Picker */}
-        <div className="form-group">
-          <label htmlFor="color">Color</label>
-          <div className="color-picker-group">
-            <input
-              type="color"
-              id="color"
-              value={selectedStep.color}
-              onChange={handleColorChange}
-              className="color-input"
-              disabled={viewerMode}
-            />
-            <input
-              type="text"
-              value={selectedStep.color}
-              onChange={handleColorChange}
-              className="color-text"
-              placeholder="#ffffff"
-              disabled={viewerMode}
-            />
-          </div>
-        </div>
+        {/* Show settings only in creator mode */}
+        {!viewerMode && (
+          <>
+            {/* Shape Selection */}
+            <div className="form-group">
+              <label htmlFor="shape">3D Shape</label>
+              <select
+                id="shape"
+                value={selectedStep.shape}
+                onChange={handleShapeChange}
+                className="form-control"
+              >
+                <option value="cube">Cube</option>
+                <option value="sphere">Sphere</option>
+                <option value="cylinder">Cylinder</option>
+                <option value="cone">Cone</option>
+              </select>
+            </div>
 
-        {/* Position Display (read-only for now) */}
-        <div className="form-group">
-          <label>Position</label>
-          <div className="position-display">
-            <div className="position-axis">
-              <span className="axis-label">X:</span>
-              <span className="axis-value">{selectedStep.position[0].toFixed(2)}</span>
+            {/* Color Picker */}
+            <div className="form-group">
+              <label htmlFor="color">Color</label>
+              <div className="color-picker-group">
+                <input
+                  type="color"
+                  id="color"
+                  value={selectedStep.color}
+                  onChange={handleColorChange}
+                  className="color-input"
+                />
+                <input
+                  type="text"
+                  value={selectedStep.color}
+                  onChange={handleColorChange}
+                  className="color-text"
+                  placeholder="#ffffff"
+                />
+              </div>
             </div>
-            <div className="position-axis">
-              <span className="axis-label">Y:</span>
-              <span className="axis-value">{selectedStep.position[1].toFixed(2)}</span>
-            </div>
-            <div className="position-axis">
-              <span className="axis-label">Z:</span>
-              <span className="axis-value">{selectedStep.position[2].toFixed(2)}</span>
-            </div>
-          </div>
-        </div>
 
-        {/* Step Info */}
-        <div className="step-info-box">
-          <h3>Step Information</h3>
-          <p><strong>ID:</strong> {selectedStep.id}</p>
-          <p><strong>Index:</strong> {steps.findIndex(s => s.id === selectedStep.id) + 1} of {steps.length}</p>
-        </div>
+            {/* Position Display (read-only for now) */}
+            <div className="form-group">
+              <label>Position</label>
+              <div className="position-display">
+                <div className="position-axis">
+                  <span className="axis-label">X:</span>
+                  <span className="axis-value">{selectedStep.position[0].toFixed(2)}</span>
+                </div>
+                <div className="position-axis">
+                  <span className="axis-label">Y:</span>
+                  <span className="axis-value">{selectedStep.position[1].toFixed(2)}</span>
+                </div>
+                <div className="position-axis">
+                  <span className="axis-label">Z:</span>
+                  <span className="axis-value">{selectedStep.position[2].toFixed(2)}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Step Info */}
+            <div className="step-info-box">
+              <h3>Step Information</h3>
+              <p><strong>ID:</strong> {selectedStep.id}</p>
+              <p><strong>Index:</strong> {steps.findIndex(s => s.id === selectedStep.id) + 1} of {steps.length}</p>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
