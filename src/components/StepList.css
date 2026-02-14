@@ -1,0 +1,134 @@
+.step-list {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background-color: #2a2a2a;
+  color: #ffffff;
+  border-right: 1px solid #444;
+}
+
+.step-list-header {
+  padding: 1rem;
+  border-bottom: 1px solid #444;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.step-list-header h2 {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.add-step-btn {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.2s;
+}
+
+.add-step-btn:hover {
+  background-color: #45a049;
+}
+
+.step-list-items {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0.5rem;
+}
+
+.empty-message {
+  padding: 2rem 1rem;
+  text-align: center;
+  color: #888;
+  font-size: 0.9rem;
+}
+
+.step-item {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem;
+  margin-bottom: 0.5rem;
+  background-color: #333;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+  gap: 0.75rem;
+}
+
+.step-item:hover {
+  background-color: #3a3a3a;
+}
+
+.step-item.selected {
+  background-color: #4a4a4a;
+  border: 2px solid #4CAF50;
+  padding: calc(0.75rem - 2px);
+}
+
+.step-number {
+  background-color: #555;
+  color: #fff;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 0.9rem;
+  flex-shrink: 0;
+}
+
+.step-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.step-shape {
+  font-size: 0.8rem;
+  color: #aaa;
+  text-transform: capitalize;
+}
+
+.step-description {
+  font-size: 0.9rem;
+  margin-top: 0.2rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.step-color {
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 4px;
+  border: 1px solid #555;
+  flex-shrink: 0;
+}
+
+.delete-btn {
+  background-color: #f44336;
+  color: white;
+  border: none;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1.5rem;
+  line-height: 1;
+  transition: background-color 0.2s;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.delete-btn:hover {
+  background-color: #da190b;
+}
