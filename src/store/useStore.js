@@ -36,7 +36,7 @@ const useStore = create((set, get) => ({
       shape: 'cube', // Default shape
       description: `Step ${steps.length + 1}`,
       position: [...nextPosition],
-      color: '#' + Math.floor(Math.random()*16777215).toString(16), // Random color
+      color: '#' + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0'), // Random color with proper padding
     };
     
     // Calculate next position (move to the right by 3 units)
