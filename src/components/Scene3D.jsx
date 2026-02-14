@@ -59,9 +59,89 @@ function Scene3D() {
   const selectStep = useStore((state) => state.selectStep);
   const viewerMode = useStore((state) => state.viewerMode);
   
-  // Find the selected step to get its position
+  // Find the selected step to get its position (could be a step or substep)
+  let targetPosition = null;
   const selectedStep = steps.find((step) => step.id === selectedStepId);
-  const targetPosition = selectedStep ? selectedStep.position : null;
+  if (selectedStep) {
+    targetPosition = selectedStep.position;
+  } else {
+    // Search in substeps
+    for (const step of steps) {
+      if (step.subSteps && step.subSteps.length > 0) {
+        const foundSubStep = step.subSteps.find((subStep) => subStep.id === selectedStepId);
+        if (foundSubStep) {
+          targetPosition = foundSubStep.position;
+          break;
+        }
+      }
+    }
+  }
+
+  // Flatten all steps and substeps for rendering
+  const allShapes = [];
+  const allConnections = [];
+
+  steps.forEach((step, index) => {
+    // Add main step
+    allShapes.push(
+      <Shape3D
+        key={step.id}
+        step={step}
+        isSelected={step.id === selectedStepId}
+        onClick={() => selectStep(step.id)}
+      />
+    );
+
+    // Add connection to previous step
+    if (index > 0) {
+      const previousStep = steps[index - 1];
+      allConnections.push(
+        <Connection
+          key={`connection-${step.id}`}
+          start={previousStep.position}
+          end={step.position}
+        />
+      );
+    }
+
+    // Add substeps and their connections
+    if (step.subSteps && step.subSteps.length > 0) {
+      step.subSteps.forEach((subStep, subIndex) => {
+        // Add substep shape
+        allShapes.push(
+          <Shape3D
+            key={subStep.id}
+            step={subStep}
+            isSelected={subStep.id === selectedStepId}
+            onClick={() => selectStep(subStep.id)}
+          />
+        );
+
+        // Add connection from parent to first substep
+        if (subIndex === 0) {
+          allConnections.push(
+            <Connection
+              key={`connection-parent-${subStep.id}`}
+              start={step.position}
+              end={subStep.position}
+            />
+          );
+        }
+
+        // Add connection between consecutive substeps
+        if (subIndex > 0) {
+          const previousSubStep = step.subSteps[subIndex - 1];
+          allConnections.push(
+            <Connection
+              key={`connection-substep-${subStep.id}`}
+              start={previousSubStep.position}
+              end={subStep.position}
+            />
+          );
+        }
+      });
+    }
+  });
 
   return (
     <div style={{ width: '100%', height: '100%', background: '#1a1a1a' }}>
@@ -85,28 +165,11 @@ function Scene3D() {
           followCamera={false}
         />
         
-        {/* Render all steps as 3D shapes */}
-        {steps.map((step) => (
-          <Shape3D
-            key={step.id}
-            step={step}
-            isSelected={step.id === selectedStepId}
-            onClick={() => selectStep(step.id)}
-          />
-        ))}
+        {/* Render all shapes (steps and substeps) */}
+        {allShapes}
         
-        {/* Render connections between consecutive steps */}
-        {steps.map((step, index) => {
-          if (index === 0) return null; // No connection for the first step
-          const previousStep = steps[index - 1];
-          return (
-            <Connection
-              key={`connection-${step.id}`}
-              start={previousStep.position}
-              end={step.position}
-            />
-          );
-        })}
+        {/* Render all connections */}
+        {allConnections}
         
         {/* Camera controls - allows user to rotate, zoom, and pan */}
         <CameraController 

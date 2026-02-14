@@ -13,23 +13,52 @@ function StepEditor() {
   const steps = useStore((state) => state.steps);
   const selectedStepId = useStore((state) => state.selectedStepId);
   const updateStep = useStore((state) => state.updateStep);
+  const updateSubStep = useStore((state) => state.updateSubStep);
   const viewerMode = useStore((state) => state.viewerMode);
 
-  // Find the selected step
-  const selectedStep = steps.find((step) => step.id === selectedStepId);
+  // Find the selected step (could be a main step or a substep)
+  let selectedStep = null;
+  let parentStep = null;
+  let isSubStep = false;
+
+  // First, check if it's a main step
+  selectedStep = steps.find((step) => step.id === selectedStepId);
+  
+  // If not found, search in substeps
+  if (!selectedStep) {
+    for (const step of steps) {
+      if (step.subSteps && step.subSteps.length > 0) {
+        const foundSubStep = step.subSteps.find((subStep) => subStep.id === selectedStepId);
+        if (foundSubStep) {
+          selectedStep = foundSubStep;
+          parentStep = step;
+          isSubStep = true;
+          break;
+        }
+      }
+    }
+  }
 
   // Handle form changes - update directly in the store
   const handleDescriptionChange = (e) => {
     const newDescription = e.target.value;
     if (selectedStep && !viewerMode) {
-      updateStep(selectedStep.id, { description: newDescription });
+      if (isSubStep) {
+        updateSubStep(parentStep.id, selectedStep.id, { description: newDescription });
+      } else {
+        updateStep(selectedStep.id, { description: newDescription });
+      }
     }
   };
 
   const handleShapeChange = (e) => {
     const newShape = e.target.value;
     if (selectedStep && !viewerMode) {
-      updateStep(selectedStep.id, { shape: newShape });
+      if (isSubStep) {
+        updateSubStep(parentStep.id, selectedStep.id, { shape: newShape });
+      } else {
+        updateStep(selectedStep.id, { shape: newShape });
+      }
     }
   };
 
@@ -41,7 +70,11 @@ function StepEditor() {
     // For color picker input, always update (it always gives valid colors)
     // For text input, only update if it's a valid hex color
     if (selectedStep && !viewerMode && (e.target.type === 'color' || isValidHex)) {
-      updateStep(selectedStep.id, { color: newColor });
+      if (isSubStep) {
+        updateSubStep(parentStep.id, selectedStep.id, { color: newColor });
+      } else {
+        updateStep(selectedStep.id, { color: newColor });
+      }
     }
   };
 
@@ -58,10 +91,19 @@ function StepEditor() {
     );
   }
 
+  // Calculate step index for display
+  let stepIndex = 0;
+  if (isSubStep) {
+    stepIndex = parentStep.subSteps.findIndex(s => s.id === selectedStep.id);
+  } else {
+    stepIndex = steps.findIndex(s => s.id === selectedStep.id);
+  }
+
   return (
     <div className="step-editor">
       <div className="step-editor-header">
         <h2>{viewerMode ? 'Step Details' : 'Step Editor'}</h2>
+        {isSubStep && <span className="substep-badge">Substep</span>}
       </div>
 
       <div className="step-editor-content">
@@ -140,9 +182,19 @@ function StepEditor() {
 
             {/* Step Info */}
             <div className="step-info-box">
-              <h3>Step Information</h3>
+              <h3>{isSubStep ? 'Substep Information' : 'Step Information'}</h3>
               <p><strong>ID:</strong> {selectedStep.id}</p>
-              <p><strong>Index:</strong> {steps.findIndex(s => s.id === selectedStep.id) + 1} of {steps.length}</p>
+              {isSubStep ? (
+                <>
+                  <p><strong>Parent Step:</strong> {steps.findIndex(s => s.id === parentStep.id) + 1}</p>
+                  <p><strong>Substep Index:</strong> {stepIndex + 1} of {parentStep.subSteps.length}</p>
+                </>
+              ) : (
+                <>
+                  <p><strong>Index:</strong> {stepIndex + 1} of {steps.length}</p>
+                  <p><strong>Substeps:</strong> {selectedStep.subSteps?.length || 0}</p>
+                </>
+              )}
             </div>
           </>
         )}
