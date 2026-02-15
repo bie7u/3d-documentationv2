@@ -19,7 +19,6 @@ function StepEditor() {
   const connections = useStore((state) => state.connections);
   const addConnection = useStore((state) => state.addConnection);
   const deleteConnection = useStore((state) => state.deleteConnection);
-  const updateConnection = useStore((state) => state.updateConnection);
 
   // Find the selected step (could be a main step or a substep)
   let selectedStep = null;
