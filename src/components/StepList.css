@@ -132,3 +132,47 @@
 .delete-btn:hover {
   background-color: #da190b;
 }
+
+/* Substep styles */
+.substep-container {
+  margin-left: 1rem;
+}
+
+.substep-item {
+  background-color: #2a2a2a;
+  border-left: 2px solid #4CAF50;
+}
+
+.substep-item:hover {
+  background-color: #313131;
+}
+
+.substep-item.selected {
+  background-color: #3a3a3a;
+  border-left: 2px solid #4CAF50;
+}
+
+.substeps-list {
+  margin-top: 0.25rem;
+}
+
+.add-substep-btn {
+  background-color: #2196F3;
+  color: white;
+  border: none;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1.2rem;
+  line-height: 1;
+  transition: background-color 0.2s;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.add-substep-btn:hover {
+  background-color: #1976D2;
+}

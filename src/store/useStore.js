@@ -12,6 +12,7 @@ import { create } from 'zustand';
  *   - description: text description of the step
  *   - position: [x, y, z] coordinates in 3D space
  *   - color: hex color for the shape
+ *   - subSteps: Array of substep objects (same structure as steps)
  * - selectedStepId: ID of the currently selected step
  * - nextPosition: Next available position for a new step
  * - viewerMode: Boolean flag for viewer mode (read-only)
@@ -47,6 +48,7 @@ const useStore = create((set, get) => ({
       description: `Step ${steps.length + 1}`,
       position: [...nextPosition],
       color: '#' + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0'), // Random color with proper padding
+      subSteps: [], // Initialize empty substeps array
     };
     
     // Calculate next position (move to the right by 3 units)
@@ -87,6 +89,91 @@ const useStore = create((set, get) => ({
     const newSteps = steps.map(step => 
       step.id === id ? { ...step, ...updates } : step
     );
+    
+    set({ steps: newSteps });
+  },
+  
+  /**
+   * Add a substep to a specific parent step
+   * Note: While the data structure supports nested substeps (substeps having their own substeps),
+   * the UI currently limits substeps to one level for simplicity. This can be extended in the future if needed.
+   */
+  addSubStep: (parentId) => {
+    const { steps } = get();
+    const parentStep = steps.find(step => step.id === parentId);
+    if (!parentStep) return;
+    
+    const subStepId = Date.now();
+    const subStepCount = parentStep.subSteps?.length || 0;
+    
+    // Calculate position for the substep
+    // Place substeps below the parent step (Y - 2) and offset in Z direction
+    const newSubStep = {
+      id: subStepId,
+      shape: 'cube',
+      description: `Substep ${subStepCount + 1}`,
+      position: [
+        parentStep.position[0],
+        parentStep.position[1] - 2,
+        parentStep.position[2] + (subStepCount * 2)
+      ],
+      color: '#' + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0'),
+      subSteps: [], // Substeps can also have substeps
+    };
+    
+    const newSteps = steps.map(step =>
+      step.id === parentId
+        ? { ...step, subSteps: [...(step.subSteps || []), newSubStep] }
+        : step
+    );
+    
+    set({
+      steps: newSteps,
+      selectedStepId: subStepId,
+    });
+  },
+  
+  /**
+   * Delete a substep from a parent step
+   */
+  deleteSubStep: (parentId, subStepId) => {
+    const { steps, selectedStepId } = get();
+    
+    const newSteps = steps.map(step => {
+      if (step.id === parentId) {
+        const newSubSteps = (step.subSteps || []).filter(subStep => subStep.id !== subStepId);
+        return { ...step, subSteps: newSubSteps };
+      }
+      return step;
+    });
+    
+    // If we deleted the selected substep, select the parent
+    let newSelectedId = selectedStepId;
+    if (selectedStepId === subStepId) {
+      newSelectedId = parentId;
+    }
+    
+    set({
+      steps: newSteps,
+      selectedStepId: newSelectedId,
+    });
+  },
+  
+  /**
+   * Update a substep's properties
+   */
+  updateSubStep: (parentId, subStepId, updates) => {
+    const { steps } = get();
+    
+    const newSteps = steps.map(step => {
+      if (step.id === parentId) {
+        const newSubSteps = (step.subSteps || []).map(subStep =>
+          subStep.id === subStepId ? { ...subStep, ...updates } : subStep
+        );
+        return { ...step, subSteps: newSubSteps };
+      }
+      return step;
+    });
     
     set({ steps: newSteps });
   },
