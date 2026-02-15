@@ -244,7 +244,8 @@ const useStore = create((set, get) => ({
    */
   addConnection: (from, to, description = '') => {
     const { connections } = get();
-    const id = Date.now();
+    // Use timestamp + random component for better uniqueness
+    const id = Date.now() + Math.floor(Math.random() * 1000);
     
     const newConnection = {
       id,

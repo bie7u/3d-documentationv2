@@ -112,9 +112,12 @@ function StepEditor() {
   const handleAddConnection = () => {
     if (!selectedStep || !newConnectionTarget) return;
     
-    const targetId = parseInt(newConnectionTarget);
+    const targetId = parseInt(newConnectionTarget, 10);
     // Don't allow connecting to self
-    if (targetId === selectedStep.id) return;
+    if (targetId === selectedStep.id) {
+      alert('Cannot create a connection to the same step');
+      return;
+    }
     
     addConnection(selectedStep.id, targetId, newConnectionDescription);
     
@@ -146,6 +149,7 @@ function StepEditor() {
         }
       }
     }
+    console.warn(`Step with ID ${stepId} not found`);
     return 'Unknown';
   };
 
