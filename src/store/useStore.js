@@ -25,6 +25,10 @@ const useStore = create((set, get) => ({
   // Array of steps in the documentation
   steps: [],
   
+  // Custom connections between steps (with descriptions)
+  // Each connection: { id, from, to, description }
+  connections: [],
+  
   // ID of the currently selected step
   selectedStepId: null,
   
@@ -233,15 +237,56 @@ const useStore = create((set, get) => ({
   },
   
   /**
+   * Add a custom connection between two steps/substeps
+   * @param {number} from - ID of the source step/substep
+   * @param {number} to - ID of the target step/substep
+   * @param {string} description - Description of the connection
+   */
+  addConnection: (from, to, description = '') => {
+    const { connections } = get();
+    // Use timestamp + random component for better uniqueness
+    const id = Date.now() + Math.floor(Math.random() * 1000);
+    
+    const newConnection = {
+      id,
+      from,
+      to,
+      description,
+    };
+    
+    set({ connections: [...connections, newConnection] });
+  },
+  
+  /**
+   * Delete a custom connection by ID
+   */
+  deleteConnection: (connectionId) => {
+    const { connections } = get();
+    set({ connections: connections.filter(conn => conn.id !== connectionId) });
+  },
+  
+  /**
+   * Update a connection's properties
+   */
+  updateConnection: (connectionId, updates) => {
+    const { connections } = get();
+    const newConnections = connections.map(conn =>
+      conn.id === connectionId ? { ...conn, ...updates } : conn
+    );
+    set({ connections: newConnections });
+  },
+  
+  /**
    * Save the current model to localStorage
    */
   saveModel: () => {
-    const { modelTitle, modelDescription, steps } = get();
+    const { modelTitle, modelDescription, steps, connections } = get();
     
     const modelData = {
       title: modelTitle,
       description: modelDescription,
       steps: steps,
+      connections: connections,
       savedAt: new Date().toISOString(),
     };
     
@@ -273,6 +318,7 @@ const useStore = create((set, get) => ({
         modelTitle: model.title,
         modelDescription: model.description,
         steps: model.steps,
+        connections: model.connections || [],
         selectedStepId: model.steps.length > 0 ? model.steps[0].id : null,
         nextPosition: model.steps.length > 0 
           ? [model.steps[model.steps.length - 1].position[0] + 3, 0, 0]
@@ -306,6 +352,7 @@ const useStore = create((set, get) => ({
       modelTitle: 'Untitled Model',
       modelDescription: '',
       steps: [],
+      connections: [],
       selectedStepId: null,
       nextPosition: [0, 0, 0],
       viewerMode: false,

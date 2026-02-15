@@ -160,3 +160,117 @@ textarea.form-control {
 .step-info-box strong {
   color: #ccc;
 }
+
+/* Connections Section */
+.connections-section {
+  margin-top: 2rem;
+  padding: 1rem;
+  background-color: #333;
+  border-radius: 4px;
+  border: 1px solid #555;
+}
+
+.connections-section h3 {
+  margin: 0 0 1rem 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #ccc;
+}
+
+.connections-section h4 {
+  margin: 1.5rem 0 0.75rem 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #aaa;
+}
+
+.connections-list {
+  margin-bottom: 1.5rem;
+}
+
+.connection-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem;
+  margin-bottom: 0.5rem;
+  background-color: #2a2a2a;
+  border: 1px solid #444;
+  border-radius: 4px;
+}
+
+.connection-info {
+  flex: 1;
+}
+
+.connection-direction {
+  font-size: 0.85rem;
+  color: #ccc;
+  margin-bottom: 0.25rem;
+}
+
+.connection-label {
+  font-weight: 600;
+  color: #888;
+  margin-right: 0.25rem;
+}
+
+.connection-description {
+  font-size: 0.8rem;
+  color: #888;
+  font-style: italic;
+  margin-top: 0.25rem;
+}
+
+.delete-connection-btn {
+  padding: 0.25rem 0.5rem;
+  background-color: #d32f2f;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1.2rem;
+  line-height: 1;
+  transition: background-color 0.2s;
+}
+
+.delete-connection-btn:hover {
+  background-color: #b71c1c;
+}
+
+.no-connections {
+  color: #888;
+  font-size: 0.85rem;
+  font-style: italic;
+  text-align: center;
+  padding: 1rem 0;
+}
+
+.add-connection-form {
+  border-top: 1px solid #444;
+  padding-top: 1rem;
+}
+
+.add-connection-btn {
+  width: 100%;
+  padding: 0.75rem;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: background-color 0.2s;
+}
+
+.add-connection-btn:hover:not(:disabled) {
+  background-color: #45a049;
+}
+
+.add-connection-btn:disabled {
+  background-color: #555;
+  color: #888;
+  cursor: not-allowed;
+}
+
