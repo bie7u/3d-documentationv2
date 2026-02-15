@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import useStore from '../store/useStore';
 import './StepEditor.css';
 
@@ -15,6 +16,10 @@ function StepEditor() {
   const updateStep = useStore((state) => state.updateStep);
   const updateSubStep = useStore((state) => state.updateSubStep);
   const viewerMode = useStore((state) => state.viewerMode);
+  const connections = useStore((state) => state.connections);
+  const addConnection = useStore((state) => state.addConnection);
+  const deleteConnection = useStore((state) => state.deleteConnection);
+  const updateConnection = useStore((state) => state.updateConnection);
 
   // Find the selected step (could be a main step or a substep)
   let selectedStep = null;
@@ -76,6 +81,73 @@ function StepEditor() {
         updateStep(selectedStep.id, { color: newColor });
       }
     }
+  };
+  
+  // State for new connection form
+  const [newConnectionTarget, setNewConnectionTarget] = useState('');
+  const [newConnectionDescription, setNewConnectionDescription] = useState('');
+  
+  // Get all available steps and substeps for connection target dropdown
+  const getAllStepsForDropdown = () => {
+    const options = [];
+    steps.forEach((step) => {
+      options.push({
+        id: step.id,
+        label: `Step ${steps.indexOf(step) + 1}: ${step.description}`,
+        isSubstep: false,
+      });
+      if (step.subSteps && step.subSteps.length > 0) {
+        step.subSteps.forEach((subStep, subIndex) => {
+          options.push({
+            id: subStep.id,
+            label: `  └─ Substep ${subIndex + 1}: ${subStep.description}`,
+            isSubstep: true,
+          });
+        });
+      }
+    });
+    return options;
+  };
+  
+  // Handle adding a new connection
+  const handleAddConnection = () => {
+    if (!selectedStep || !newConnectionTarget) return;
+    
+    const targetId = parseInt(newConnectionTarget);
+    // Don't allow connecting to self
+    if (targetId === selectedStep.id) return;
+    
+    addConnection(selectedStep.id, targetId, newConnectionDescription);
+    
+    // Reset form
+    setNewConnectionTarget('');
+    setNewConnectionDescription('');
+  };
+  
+  // Get connections related to the selected step
+  const getRelatedConnections = () => {
+    if (!selectedStep) return [];
+    return connections.filter(
+      conn => conn.from === selectedStep.id || conn.to === selectedStep.id
+    );
+  };
+  
+  // Helper to get step label by ID
+  const getStepLabel = (stepId) => {
+    for (const step of steps) {
+      if (step.id === stepId) {
+        return `Step ${steps.indexOf(step) + 1}: ${step.description}`;
+      }
+      if (step.subSteps) {
+        for (const subStep of step.subSteps) {
+          if (subStep.id === stepId) {
+            const subIndex = step.subSteps.indexOf(subStep);
+            return `Substep ${subIndex + 1}: ${subStep.description}`;
+          }
+        }
+      }
+    }
+    return 'Unknown';
   };
 
   if (!selectedStep) {
@@ -195,6 +267,87 @@ function StepEditor() {
                   <p><strong>Substeps:</strong> {selectedStep.subSteps?.length || 0}</p>
                 </>
               )}
+            </div>
+            
+            {/* Connections Management */}
+            <div className="connections-section">
+              <h3>Connections</h3>
+              
+              {/* Existing connections */}
+              <div className="connections-list">
+                {getRelatedConnections().length > 0 ? (
+                  getRelatedConnections().map((conn) => (
+                    <div key={conn.id} className="connection-item">
+                      <div className="connection-info">
+                        <div className="connection-direction">
+                          {conn.from === selectedStep.id ? (
+                            <>
+                              <span className="connection-label">To:</span> {getStepLabel(conn.to)}
+                            </>
+                          ) : (
+                            <>
+                              <span className="connection-label">From:</span> {getStepLabel(conn.from)}
+                            </>
+                          )}
+                        </div>
+                        {conn.description && (
+                          <div className="connection-description">"{conn.description}"</div>
+                        )}
+                      </div>
+                      <button
+                        className="delete-connection-btn"
+                        onClick={() => deleteConnection(conn.id)}
+                        title="Delete connection"
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ))
+                ) : (
+                  <p className="no-connections">No connections yet.</p>
+                )}
+              </div>
+              
+              {/* Add new connection */}
+              <div className="add-connection-form">
+                <h4>Add Connection</h4>
+                <div className="form-group">
+                  <label htmlFor="connection-target">Connect to:</label>
+                  <select
+                    id="connection-target"
+                    className="form-control"
+                    value={newConnectionTarget}
+                    onChange={(e) => setNewConnectionTarget(e.target.value)}
+                  >
+                    <option value="">Select a step...</option>
+                    {getAllStepsForDropdown()
+                      .filter(option => option.id !== selectedStep.id)
+                      .map((option) => (
+                        <option key={option.id} value={option.id}>
+                          {option.label}
+                        </option>
+                      ))}
+                  </select>
+                </div>
+                <div className="form-group">
+                  <label htmlFor="connection-description">Description (optional):</label>
+                  <input
+                    id="connection-description"
+                    type="text"
+                    className="form-control"
+                    value={newConnectionDescription}
+                    onChange={(e) => setNewConnectionDescription(e.target.value)}
+                    placeholder="e.g., 'Next step', 'Alternative path'..."
+                  />
+                </div>
+                <button
+                  className="add-connection-btn"
+                  onClick={handleAddConnection}
+                  disabled={!newConnectionTarget}
+                >
+                  Add Connection
+                </button>
+              </div>
             </div>
           </>
         )}

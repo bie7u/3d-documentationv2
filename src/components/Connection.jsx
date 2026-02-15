@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import * as THREE from 'three';
+import { Text } from '@react-three/drei';
 
 /**
  * Component for rendering a connection (line/pipe) between two steps
@@ -8,8 +9,9 @@ import * as THREE from 'three';
  * Props:
  * - start: [x, y, z] position of the starting point
  * - end: [x, y, z] position of the ending point
+ * - description: Optional text description shown near the connection
  */
-function Connection({ start, end }) {
+function Connection({ start, end, description }) {
   // Calculate the geometry for the pipe connection
   const { position, rotation, length } = useMemo(() => {
     const startVec = new THREE.Vector3(...start);
@@ -38,15 +40,32 @@ function Connection({ start, end }) {
   }, [start, end]);
 
   return (
-    <mesh position={position} rotation={rotation}>
-      {/* Cylindrical pipe with small radius */}
-      <cylinderGeometry args={[0.05, 0.05, length, 8]} />
-      <meshStandardMaterial
-        color="#888888"
-        metalness={0.8}
-        roughness={0.2}
-      />
-    </mesh>
+    <>
+      <mesh position={position} rotation={rotation}>
+        {/* Cylindrical pipe with small radius */}
+        <cylinderGeometry args={[0.05, 0.05, length, 8]} />
+        <meshStandardMaterial
+          color="#888888"
+          metalness={0.8}
+          roughness={0.2}
+        />
+      </mesh>
+      
+      {/* Render description text if provided */}
+      {description && (
+        <Text
+          position={position}
+          fontSize={0.3}
+          color="#ffffff"
+          anchorX="center"
+          anchorY="middle"
+          outlineWidth={0.02}
+          outlineColor="#000000"
+        >
+          {description}
+        </Text>
+      )}
+    </>
   );
 }
 

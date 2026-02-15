@@ -58,6 +58,7 @@ function Scene3D() {
   const selectedStepId = useStore((state) => state.selectedStepId);
   const selectStep = useStore((state) => state.selectStep);
   const viewerMode = useStore((state) => state.viewerMode);
+  const connections = useStore((state) => state.connections);
   
   // Find the selected step to get its position (could be a step or substep)
   let targetPosition = null;
@@ -80,6 +81,21 @@ function Scene3D() {
   // Flatten all steps and substeps for rendering
   const allShapes = [];
   const allConnections = [];
+  
+  // Helper function to find a step or substep by ID
+  const findStepById = (id) => {
+    // Check main steps
+    for (const step of steps) {
+      if (step.id === id) return step;
+      // Check substeps
+      if (step.subSteps && step.subSteps.length > 0) {
+        for (const subStep of step.subSteps) {
+          if (subStep.id === id) return subStep;
+        }
+      }
+    }
+    return null;
+  };
 
   steps.forEach((step, index) => {
     // Add main step
@@ -140,6 +156,23 @@ function Scene3D() {
           );
         }
       });
+    }
+  });
+  
+  // Add custom connections
+  connections.forEach((connection) => {
+    const fromStep = findStepById(connection.from);
+    const toStep = findStepById(connection.to);
+    
+    if (fromStep && toStep) {
+      allConnections.push(
+        <Connection
+          key={`custom-connection-${connection.id}`}
+          start={fromStep.position}
+          end={toStep.position}
+          description={connection.description}
+        />
+      );
     }
   });
 
